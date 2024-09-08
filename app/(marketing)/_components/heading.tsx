@@ -2,6 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
+import Link from "next/link";
 
 export const Heading = () => {
   return (
@@ -11,8 +12,12 @@ export const Heading = () => {
         documents, schedules, plans
       </h1>
       <h3 className="text-base sm:text-xl md:text-2xl font-medium">
-        Jotion is a Notion clone created by Jerry Ji. Following <br />a tutorial
-        by Antonio
+        Jotion is a Notion clone created by Jerry Ji. <br />
+        Following a tutorial by Antonio{" "}
+        <Link href="https://www.youtube.com/watch?v=0OaDyjB9Ib8&t=3614s">
+          here
+        </Link>
+        .
       </h3>
       <Button>
         Enter Jotion
