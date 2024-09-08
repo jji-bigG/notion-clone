@@ -14,11 +14,11 @@ export const ConvexClientProvider = ({
   return (
     <ClerkProvider
       publishableKey={process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY!}
+      afterSignOutUrl={"/"}
     >
       <ConvexProviderWithClerk useAuth={useAuth} client={convex}>
         {children}
       </ConvexProviderWithClerk>
-      {children}
     </ClerkProvider>
   );
 };
