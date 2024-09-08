@@ -1,18 +1,21 @@
 "use client";
 
 import { useMediaQuery } from "usehooks-ts";
-import { ChevronsLeft, MenuIcon } from "lucide-react";
+import { ChevronsLeft, MenuIcon, PlusCircle } from "lucide-react";
 import React, { ElementRef, use, useEffect, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import UserItem from "./user-item";
-import { useQuery } from "convex/react";
+import { useMutation, useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
+import Item from "./item";
+import { toast } from "sonner";
 
 export const Navigation = () => {
   const pathname = usePathname();
   const isMobile = useMediaQuery("(max-width: 768px)");
   const documents = useQuery(api.documents.get);
+  const create = useMutation(api.documents.create);
 
   const isResizingRef = useRef(false);
   const sidebarRef = useRef<ElementRef<"aside">>(null);
@@ -21,17 +24,11 @@ export const Navigation = () => {
   const [isCollapsed, setIsCollapsed] = useState(isMobile);
 
   useEffect(() => {
-    if (isMobile && !isCollapsed) {
-      collapse();
-    } else {
-      resetWidth();
-    }
+    isMobile ? collapse() : resetWidth();
   }, [isMobile]);
 
   useEffect(() => {
-    if (isMobile) {
-      resetWidth();
-    }
+    if (isMobile) collapse();
   }, [pathname, isMobile]);
 
   const handleMouseDown = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
@@ -99,6 +96,15 @@ export const Navigation = () => {
     }
   };
 
+  const handleCreate = () => {
+    const promise = create({ title: "New Document" });
+    toast.promise(promise, {
+      loading: "Creating document...",
+      success: "Document created!",
+      error: "Failed to create document",
+    });
+  };
+
   return (
     <>
       <aside
@@ -121,6 +127,7 @@ export const Navigation = () => {
         </div>
         <div>
           <UserItem />
+          <Item onClick={handleCreate} label="New Document" Icon={PlusCircle} />
         </div>
         <div className="mt-4">
           {documents?.map((doc) => (
