@@ -9,7 +9,7 @@ import { Search, Trash, Undo } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
 import React, { useState } from "react";
 import { toast } from "sonner";
-import { ConfirmModal } from "./modals/confirm-modal";
+import { ConfirmModal } from "../../../components/modals/confirm-modal";
 
 const TrashBox = () => {
   const router = useRouter();
