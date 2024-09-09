@@ -116,3 +116,108 @@ export const create = mutation({
     return doc;
   },
 });
+
+export const getTrash = query({
+  handler: async (ctx) => {
+    const identity = await ctx.auth.getUserIdentity();
+
+    if (!identity) {
+      throw new Error("Not authenticated");
+    }
+
+    const userId = identity.subject;
+
+    const documents = await ctx.db
+      .query("documents")
+      .withIndex("by_user", (q) => q.eq("userId", userId))
+      .filter((q) => q.eq(q.field("isArchived"), true))
+      .order("desc")
+      .collect();
+
+    return documents;
+  },
+});
+
+export const restore = mutation({
+  args: {
+    id: v.id("documents"),
+  },
+  handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) {
+      throw new Error("Unauthorized");
+    }
+
+    const userId = identity.subject;
+
+    const existingDoc = await ctx.db.get(args.id);
+    if (!existingDoc) {
+      throw new Error("Document not found");
+    }
+
+    if (existingDoc.userId !== userId) {
+      throw new Error("Unauthorized"); // we are logged in, but we just cannot modify it
+    }
+
+    const recursiveRestore = async (docId: Id<"documents">) => {
+      const children = await ctx.db
+        .query("documents")
+        .withIndex("by_user_parent", (q) =>
+          q.eq("userId", userId).eq("parentDocument", docId)
+        )
+        .collect();
+
+      // iterate through all the children and repeat the archive process
+      for (const child of children) {
+        // only way to do the async await function: need this for loop
+        await ctx.db.patch(child._id, {
+          isArchived: false,
+        });
+        await recursiveRestore(child._id);
+      }
+    };
+
+    const options: Partial<Doc<"documents">> = {
+      isArchived: false,
+    };
+
+    if (existingDoc.parentDocument) {
+      options.parentDocument = existingDoc.parentDocument;
+    }
+
+    const doc = await ctx.db.patch(args.id, {
+      isArchived: false,
+    });
+
+    await recursiveRestore(args.id);
+
+    return doc;
+  },
+});
+
+export const remove = mutation({
+  args: {
+    id: v.id("documents"),
+  },
+  handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) {
+      throw new Error("Unauthorized");
+    }
+
+    const userId = identity.subject;
+
+    const existingDoc = await ctx.db.get(args.id);
+
+    if (!existingDoc) {
+      throw new Error("Document not found");
+    }
+
+    if (existingDoc.userId !== userId) {
+      throw new Error("Unauthorized"); // we are logged in, but we just cannot modify it
+    }
+
+    const doc = await ctx.db.delete(args.id);
+    return doc;
+  },
+});
