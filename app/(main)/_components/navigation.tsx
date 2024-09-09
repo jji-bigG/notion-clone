@@ -24,6 +24,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import TrashBox from "./trashbox";
 
 export const Navigation = () => {
   const pathname = usePathname();
@@ -156,9 +157,7 @@ export const Navigation = () => {
               align="end"
               className="p-0 w-72"
             >
-              <div className="w-60">
-                <Item label="Empty Trash" Icon={Trash} />
-              </div>
+              <TrashBox />
             </PopoverContent>
           </Popover>
         </div>
