@@ -2,21 +2,6 @@ import { mutation, query } from "./_generated/server";
 import { Doc, Id } from "./_generated/dataModel";
 import { v } from "convex/values";
 
-export const get = query({
-  // args: {
-  //   id: v.id("documents"),
-  // },
-  handler: async (ctx) => {
-    const identity = await ctx.auth.getUserIdentity();
-    if (!identity) {
-      throw new Error("Unauthorized");
-    }
-
-    const doc = await ctx.db.query("documents").collect();
-    return doc;
-  },
-});
-
 export const archive = mutation({
   args: {
     id: v.id("documents"),
@@ -64,6 +49,9 @@ export const archive = mutation({
     const doc = await ctx.db.patch(args.id, {
       isArchived: true,
     });
+
+    await recursiveArchive(args.id);
+
     return doc;
   },
 });

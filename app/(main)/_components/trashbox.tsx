@@ -9,6 +9,7 @@ import { Search, Trash, Undo } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
 import React, { useState } from "react";
 import { toast } from "sonner";
+import { ConfirmModal } from "./modals/confirm-modal";
 
 const TrashBox = () => {
   const router = useRouter();
@@ -42,11 +43,7 @@ const TrashBox = () => {
     });
   };
 
-  const onRemove = (
-    event: React.MouseEvent<HTMLDivElement, MouseEvent>,
-    docId: Id<"documents">
-  ) => {
-    event.stopPropagation();
+  const onRemove = (docId: Id<"documents">) => {
     const promise = remove({
       id: docId,
     });
@@ -102,9 +99,11 @@ const TrashBox = () => {
               >
                 <Undo className="w-4 h-4 text-muted-foreground" />
               </div>
-              <div className="rounded-sm p-2 hover:bg-neutral-200 dark:hover:bg-neutral-600">
-                <Trash className="h-4 w-4 text-muted-foreground" />
-              </div>
+              <ConfirmModal onConfirm={() => onRemove(doc._id)}>
+                <div className="rounded-sm p-2 hover:bg-neutral-200 dark:hover:bg-neutral-600">
+                  <Trash className="h-4 w-4 text-muted-foreground" />
+                </div>
+              </ConfirmModal>
             </div>
           </div>
         ))}
