@@ -260,3 +260,38 @@ export const getById = query({
     return doc;
   },
 });
+
+export const update = mutation({
+  args: {
+    id: v.id("documents"),
+    title: v.optional(v.string()),
+    content: v.optional(v.string()),
+    coverImage: v.optional(v.string()),
+    icon: v.optional(v.string()),
+    isPublished: v.optional(v.boolean()),
+  },
+  handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) {
+      throw new Error("Unauthorized");
+    }
+
+    const userId = identity.subject;
+
+    const { id, ...data } = args;
+
+    const existingDoc = await ctx.db.get(id);
+
+    if (!existingDoc) {
+      throw new Error("Document not found");
+    }
+
+    if (existingDoc.userId !== userId) {
+      throw new Error("Unauthorized");
+    }
+
+    const doc = await ctx.db.patch(id, data);
+
+    return doc;
+  },
+});
