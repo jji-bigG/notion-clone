@@ -1,5 +1,6 @@
 "use client";
 
+import { CoverImage } from "@/components/cover";
 import { Toolbar } from "@/components/toolbar";
 import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
@@ -27,9 +28,11 @@ const DocumentIdPage = ({ params }: DocumentIdPageProps) => {
 
   return (
     <div className="pb-40">
+      <CoverImage />
+
       {/* below is a temp placeholder (i don't wish to delete) for the cover image */}
       {/* a trick that we can do we create some fillers for now dev'ing the toolbars */}
-      <div className="h-[35vh]" />
+      {/* <div className="h-[35vh]" /> */}
       <div className="md:max-w-3xl lg:max-w-4xl mx-auto">
         <Toolbar initialData={document} />
       </div>
