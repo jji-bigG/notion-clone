@@ -11,7 +11,7 @@ import {
   Trash,
 } from "lucide-react";
 import React, { ElementRef, useEffect, useRef, useState } from "react";
-import { useParams, usePathname } from "next/navigation";
+import { useParams, usePathname, useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 import UserItem from "./user-item";
 import { useMutation } from "convex/react";
@@ -31,6 +31,7 @@ import { NavBar } from "./navbar";
 
 export const Navigation = () => {
   const pathname = usePathname();
+  const router = useRouter();
   const params = useParams();
   const isMobile = useMediaQuery("(max-width: 768px)");
   const create = useMutation(api.documents.create);
@@ -117,7 +118,9 @@ export const Navigation = () => {
   };
 
   const handleCreate = () => {
-    const promise = create({ title: "New Document" });
+    const promise = create({ title: "New Document" }).then((docId) => {
+      router.push(`/documents/${docId}`);
+    });
     toast.promise(promise, {
       loading: "Creating document...",
       success: "Document created!",
