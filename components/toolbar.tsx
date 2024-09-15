@@ -106,7 +106,8 @@ export const Toolbar = ({ initialData, preview }: ToolbarProps) => {
             variant="outline"
             size="sm"
           >
-            <ImageIcon className="h-4 w-4 mr-2" /> Add cover
+            <ImageIcon className="h-4 w-4 mr-2" />
+            Add cover
           </Button>
         )}
       </div>

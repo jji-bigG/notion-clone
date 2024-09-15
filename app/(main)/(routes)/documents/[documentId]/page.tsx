@@ -28,7 +28,7 @@ const DocumentIdPage = ({ params }: DocumentIdPageProps) => {
 
   return (
     <div className="pb-40">
-      <CoverImage />
+      <CoverImage url={document.coverImage} />
 
       {/* below is a temp placeholder (i don't wish to delete) for the cover image */}
       {/* a trick that we can do we create some fillers for now dev'ing the toolbars */}
